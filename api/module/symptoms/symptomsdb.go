@@ -43,3 +43,28 @@ func InsertNewSymptomsDB(symptom model.Symptoms) (bool, error) {
 	}
 	return false, errors.New("UNABLE_TO_INSERT_DATA")
 }
+
+//GetPastWeakSymptomDetailsDB get data of pastweakSymptom details from symtoms table
+func GetPastWeakSymptomDetailsDB(userId string) ([]model.Symptoms, error) {
+	symptoms := []model.Symptoms{}
+	var session *dbr.Session
+
+	connection, err := postgressSQLDB.GetSQLConnection()
+	if err != nil {
+		log.Println("error occured while getConnection", err)
+		return symptoms, err
+	}
+	session = connection.NewSession(nil)
+	TableName := "Symptoms"
+	sql := "SELECT * FROM " + TableName + " WHERE userId=? AND date >= DATE_SUB(NOW(), INTERVAL 7 DAY);"
+	count, Sqlerr := session.SelectBySql(sql, userId).Load(&symptoms)
+	if Sqlerr != nil {
+		log.Println("ERROR : GetPastWeakSymptomDetailsDB : Error occured while GetSQLConnection ---> ", err)
+		return symptoms, Sqlerr
+	}
+	if count > 0 {
+		log.Println("OUT : GetPastWeakSymptomDetailsDB", count, symptoms)
+		return symptoms, nil
+	}
+	return symptoms, errors.New("NO_DATA_FOUND")
+}

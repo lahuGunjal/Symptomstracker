@@ -10,6 +10,7 @@ import (
 
 func Init(o *echo.Group, r *echo.Group) {
 	r.POST("/addSymptoms", addSymptomsRoute)
+	r.GET("/pastWeakSymptoms/:userId", pastWeakSymptomsRoute)
 }
 
 //addSymptomsRoute to add dailysymptoms
@@ -29,4 +30,17 @@ func addSymptomsRoute(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, status)
+}
+
+//pastWeakSymptomsRoute get past weak symptoms from sql table
+func pastWeakSymptomsRoute(c echo.Context) error {
+
+	userId := c.Param("userId")
+	// call GetPastWeakSymptomDetailsService to insert new symptoms in db
+	symptoms, getSymptomDetailErr := GetPastWeakSymptomDetailsService(userId)
+	if getSymptomDetailErr != nil {
+		log.Println("pastWeakSymptomsRoute GetPastWeakSymptomDetailsService ", getSymptomDetailErr)
+		return c.JSON(http.StatusInternalServerError, getSymptomDetailErr)
+	}
+	return c.JSON(http.StatusOK, symptoms)
 }

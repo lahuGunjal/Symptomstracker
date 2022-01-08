@@ -15,3 +15,15 @@ func addSymptomsService(symptom model.Symptoms) (bool, error) {
 	}
 	return status, nil
 }
+
+//GetPastWeakSymptomDetailsService Get past weak symptoms data from sql
+func GetPastWeakSymptomDetailsService(userId string) ([]model.Symptoms, error) {
+	symptoms := []model.Symptoms{}
+	symptoms, getSymptomFromDBErr := GetPastWeakSymptomDetailsDB(userId)
+	if getSymptomFromDBErr != nil {
+		log.Println("GetPastWeakSymptomDetailsService GetPastWeakSymptomDetailsDB", getSymptomFromDBErr)
+		return symptoms, getSymptomFromDBErr
+	}
+
+	return symptoms, nil
+}
