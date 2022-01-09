@@ -56,7 +56,7 @@ func GetPastWeakSymptomDetailsDB(userId string) ([]model.Symptoms, error) {
 	}
 	session = connection.NewSession(nil)
 	TableName := "Symptoms"
-	sql := "SELECT * FROM " + TableName + " WHERE userId=? AND date >= DATE_SUB(NOW(), INTERVAL 7 DAY);"
+	sql := "SELECT * FROM " + TableName + " WHERE userId=? AND YEARWEEK(`date`, 1) = YEARWEEK( CURDATE() - INTERVAL 1 WEEK, 1);"
 	count, Sqlerr := session.SelectBySql(sql, userId).Load(&symptoms)
 	if Sqlerr != nil {
 		log.Println("ERROR : GetPastWeakSymptomDetailsDB : Error occured while GetSQLConnection ---> ", err)
